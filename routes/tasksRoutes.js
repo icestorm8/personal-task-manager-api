@@ -30,7 +30,7 @@ router.get("/", auth, async (req, res) => {
 router.post("/create", auth, async (req, res) => {
   //   const categoryId = await Category.findOne({ title: req.categoryName });
   // categoryId would be "undefined" if no category matched the title entered
-  const newTask = {
+  var newTask = {
     title: req.body.title,
     description: req.body.description,
     userID: req.user.id,
@@ -39,6 +39,7 @@ router.post("/create", auth, async (req, res) => {
   };
 
   const categoryName = req.body.category_name;
+  console.log(categoryName);
   // check if i got a category name in my req body:
   if (categoryName) {
     let category = await Category.findOne({ title: categoryName }); // search for category by the title given in my categories

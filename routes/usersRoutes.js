@@ -11,22 +11,29 @@ const auth = require("../middlewares/auth");
 
 // signup
 router.post("/", async (req, res) => {
-  const givenPass = req.body.password;
+  const alreadyExists = User.findOne({ email: req.body.email });
+  if (alreadyExists) {
+    res
+      .status(400)
+      .send("email already taken. if you already have an account - log in");
+  } else {
+    const givenPass = req.body.password;
 
-  const hashedPass = await bcrypt.hash(givenPass, 10);
+    const hashedPass = await bcrypt.hash(givenPass, 10);
 
-  const newUser = {
-    name: req.body.name,
-    email: req.body.email,
-    password: hashedPass,
-  };
+    const newUser = {
+      name: req.body.name,
+      email: req.body.email,
+      password: hashedPass,
+    };
 
-  try {
-    await User.create(newUser);
-    res.sendStatus(201);
-  } catch (err) {
-    console.error(err);
-    res.sendStatus(500);
+    try {
+      await User.create(newUser);
+      res.sendStatus(201);
+    } catch (err) {
+      console.error(err);
+      res.sendStatus(500);
+    }
   }
 });
 
