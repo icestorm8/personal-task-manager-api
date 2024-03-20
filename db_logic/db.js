@@ -5,9 +5,15 @@ const dbName = "taskManager"; // collection name
 
 function connect() {
   // conecting to project's db
-  mongoose.connect(uri, {
-    dbName,
-  });
+  try {
+    // check if db connection was successful
+    mongoose.connect(uri, {
+      dbName,
+    });
+  } catch (err) {
+    console.error(err.message);
+    process.exit(1);
+  }
 }
 
 function disconnect() {

@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 3000;
-
+const db = require("./db_logic/db");
 app.use(express.json()); // instead of body parser
 
 app.get("/", (req, res) => {
@@ -15,6 +15,7 @@ app.get("*", function (req, res) {
   res.status(404).send("<h1>404 page not found</h1>");
 });
 
+db.connect(); // connect to db
 app.listen(port, () => {
   console.log(`listens on port ${port}`);
 });
