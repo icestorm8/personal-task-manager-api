@@ -5,9 +5,9 @@ const User = require("../models/User");
 const router = express.Router();
 const auth = require("../middlewares/auth");
 
-router.get("/", (req, res) => {
-  res.send("<h1>welcome to users</h1>");
-});
+// router.get("/", (req, res) => {
+//   res.send("<h1>welcome to users</h1>");
+// });
 
 // signup
 router.post("/", async (req, res) => {
@@ -54,7 +54,7 @@ router.post("/login", async (req, res) => {
     id: user._id,
   };
 
-  const token = jwt.sign(dataForToken, process.env.JWT_SECRET);
+  const token = jwt.sign(dataForToken, "175");
 
   res.json({ token });
 });

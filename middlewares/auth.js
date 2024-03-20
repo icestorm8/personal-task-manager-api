@@ -18,6 +18,7 @@ function auth(req, res, next) {
   try {
     const data = jwt.verify(token, "175"); //key could be saved in env file
     req.user = data;
+    // console.log(data);
     next();
   } catch (err) {
     console.error(err);
