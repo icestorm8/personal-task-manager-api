@@ -70,6 +70,12 @@ router.get("/whoami", auth, (req, res) => {
   res.send(req.user.name);
 });
 
+// router.patch("/edit", auth, (req, res)=>{
+
+// })
+
+// router.delete("")
+
 // create user - signup
 // get user - login
 // delete user - remove user from db

@@ -10,7 +10,7 @@ const auth = require("../middlewares/auth");
 //   res.send("<h1>welcome to tasks</h1>");
 // });
 
-// view all tasks
+// view all users tasks
 router.get("/", auth, async (req, res) => {
   try {
     console.log(req.user.name);
@@ -26,7 +26,7 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-// create task
+// create task as logged in user
 router.post("/create", auth, async (req, res) => {
   //   const categoryId = await Category.findOne({ title: req.categoryName });
   // categoryId would be "undefined" if no category matched the title entered
@@ -67,4 +67,64 @@ router.post("/create", auth, async (req, res) => {
 // delete task
 // update task
 
+router.delete("/delete/:taskID", auth, async (req, res) => {
+  const taskID = req.params.taskID;
+  try {
+    var task = await Task.deleteOne({ _id: taskID });
+    res
+      .status(200)
+      .send(`<h1>task with id ${taskID} was deleted successfuly</h1>`);
+  } catch (err) {
+    // if task wasn't found
+    res
+      .status(400)
+      .send(`<h1>task with id ${taskID} wasn't found. deleted 0 tasks</h1>`);
+    return;
+  }
+});
+
+router.patch("/edit/:taskID", auth, async (req, res) => {
+  const taskID = req.params.taskID;
+  var title = req.body.title;
+  var description = req.body.description;
+  var categoryName = req.body.category_name;
+
+  try {
+    let task = await Task.findOne({ _id: taskID });
+    if (!task) {
+      res
+        .status(400)
+        .send("<h1>task id wasn't found. 0 tasks were modified</h1>");
+      return;
+    }
+  } catch (err) {
+    res.status(400).send("<h1>bad id</h1>");
+    return;
+  }
+
+  try {
+    var category = await Category.findOne({ title: categoryName });
+    if (!category) {
+      res
+        .status(400)
+        .send("<h1>category id wasn't found. 0 tasks were modified</h1>");
+      return;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+  try {
+    await Task.updateOne(
+      { _id: taskID },
+      {
+        title: title,
+        description: description,
+        categoryID: category._id,
+      }
+    );
+    res.status(200).send("<h1>task was modified</h1>");
+  } catch (err) {
+    console.log(err);
+  }
+});
 module.exports = router;
