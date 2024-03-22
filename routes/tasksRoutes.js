@@ -11,6 +11,22 @@ const auth = require("../middlewares/auth");
 // });
 
 // view all users tasks
+router.get("/:taskID", auth, async (req, res) => {
+  var taskID = req.params.taskID;
+  try {
+    var task = await Task.findOne({ _id: taskID }); // find tasks related to this logged in user by it's id
+    if (!task) {
+      res.status(404).send(`task wasn't found`);
+      return;
+    } else {
+      res.status(200).json(task);
+    }
+  } catch (err) {
+    res.status(500).send("<h1>bad id</h1>");
+  }
+});
+
+// read task by id
 router.get("/", auth, async (req, res) => {
   try {
     console.log(req.user.name);
@@ -25,7 +41,6 @@ router.get("/", auth, async (req, res) => {
     res.sendStatus(500);
   }
 });
-
 // create task as logged in user
 router.post("/create", auth, async (req, res) => {
   //   const categoryId = await Category.findOne({ title: req.categoryName });
