@@ -1,7 +1,7 @@
 const db = require("./db");
-const User = require("./models/User");
-const Task = require("./models/Task");
-const Category = require("./models/Category");
+const User = require("../models/User");
+const Task = require("../models/Task");
+const Category = require("../models/Category");
 
 main(); // reset the db by clearing all collections and inserting sample documents
 

@@ -9,13 +9,15 @@ const auth = require("../middlewares/auth");
 //   res.send("<h1>welcome to users</h1>");
 // });
 
-// signup
+// signup - change so admin can enter
 router.post("/", async (req, res) => {
-  const alreadyExists = User.findOne({ email: req.body.email });
+  var alreadyExists = User.findOne({ email: req.body.email });
+  console.log(alreadyExists);
   if (alreadyExists) {
     res
       .status(400)
       .send("email already taken. if you already have an account - log in");
+    return;
   } else {
     const givenPass = req.body.password;
 
@@ -25,6 +27,7 @@ router.post("/", async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       password: hashedPass,
+      isAdmin: false,
     };
 
     try {
@@ -75,7 +78,18 @@ router.get("/whoami", auth, (req, res) => {
 // })
 
 // router.delete("")
-
+router.get("/all", auth, async (req, res) => {
+  if (req.user.isAdmin) {
+    var users = await User.find(); // should this include the admin user?
+    if (!users) {
+      res.status(200).send("no users exist yet");
+      return;
+    }
+    res.json(users);
+  } else {
+    res.status(500).send("access denied");
+  }
+});
 // create user - signup
 // get user - login
 // delete user - remove user from db

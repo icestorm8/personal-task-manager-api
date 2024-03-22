@@ -10,7 +10,7 @@ const auth = require("../middlewares/auth");
 //   res.send("<h1>welcome to tasks</h1>");
 // });
 
-// view all users tasks
+// read task by id
 router.get("/:taskID", auth, async (req, res) => {
   var taskID = req.params.taskID;
   try {
@@ -26,7 +26,7 @@ router.get("/:taskID", auth, async (req, res) => {
   }
 });
 
-// read task by id
+// view all users tasks
 router.get("/", auth, async (req, res) => {
   try {
     console.log(req.user.name);

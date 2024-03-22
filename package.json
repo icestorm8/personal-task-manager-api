@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "resetDB": "node resetDB.js"
+    "resetDB": "node .\\db_logic\\resetDB.js"
   },
   "keywords": [],
   "author": "",
