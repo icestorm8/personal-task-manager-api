@@ -18,7 +18,12 @@ function connect() {
 
 function disconnect() {
   // disconnecting from db
-  mongoose.connection.close();
+  try {
+    mongoose.connection.close();
+  } catch (err) {
+    console.error(err.message);
+    process.exit(1);
+  }
 }
 
 // export functions to be used throughout app

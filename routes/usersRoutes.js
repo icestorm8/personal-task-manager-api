@@ -11,8 +11,8 @@ const auth = require("../middlewares/auth");
 
 // signup - change so admin can enter
 router.post("/", async (req, res) => {
-  var alreadyExists = User.findOne({ email: req.body.email });
-  console.log(alreadyExists);
+  var alreadyExists = await User.findOne({ email: req.body.email });
+  // console.log(alreadyExists);
   if (alreadyExists) {
     res
       .status(400)
@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       password: hashedPass,
-      isAdmin: false,
+      isAdmin: false, // to change this you have to have access to db and change manualy
     };
 
     try {
@@ -58,10 +58,12 @@ router.post("/login", async (req, res) => {
     return;
   }
 
+  // data that will be kept in token
   const dataForToken = {
     name: user.name,
     email: user.email,
     id: user._id,
+    isAdmin: user.isAdmin,
   };
 
   const token = jwt.sign(dataForToken, "175");
@@ -86,6 +88,7 @@ router.get("/all", auth, async (req, res) => {
       return;
     }
     res.json(users);
+    return;
   } else {
     res.status(500).send("access denied");
   }
