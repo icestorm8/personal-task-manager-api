@@ -6,11 +6,7 @@ const auth = require("../middlewares/auth");
 
 // tasks can be accessed only by a logged in user (aka after auth)
 
-// router.get("/", (req, res) => {
-//   res.send("<h1>welcome to tasks</h1>");
-// });
-
-// read task by id
+// read out of my own tasks by id
 router.get("/:taskID", auth, async (req, res) => {
   var taskID = req.params.taskID;
   try {
@@ -26,7 +22,7 @@ router.get("/:taskID", auth, async (req, res) => {
   }
 });
 
-// view all users tasks
+// view all logged in user's tasks
 router.get("/", auth, async (req, res) => {
   try {
     console.log(req.user.name);
@@ -41,6 +37,7 @@ router.get("/", auth, async (req, res) => {
     res.sendStatus(500);
   }
 });
+
 // create task as logged in user
 router.post("/create", auth, async (req, res) => {
   //   const categoryId = await Category.findOne({ title: req.categoryName });
@@ -78,27 +75,32 @@ router.post("/create", auth, async (req, res) => {
     res.sendStatus(500);
   }
 });
-// read task
-// delete task
-// update task
 
-router.delete("/delete/:taskID", auth, async (req, res) => {
+// remove task by it's id as long as it belongs to loged in user
+router.delete("/:taskID", auth, async (req, res) => {
   const taskID = req.params.taskID;
   try {
-    var task = await Task.deleteOne({ _id: taskID });
-    res
-      .status(200)
-      .send(`<h1>task with id ${taskID} was deleted successfuly</h1>`);
+    let task = await Task.findOne({ _id: taskID });
+    if (task) {
+      if (task.userID === req.user.userID) {
+        task = await Task.deleteOne({ _id: taskID });
+        res
+          .status(200)
+          .send(`<h1>task with id ${taskID} was deleted successfuly</h1>`);
+      } else {
+        // user tried to delete item that doesn't belong to it
+        res.send("<h1>invalid id</h1>");
+      }
+    } else {
+      res.status("task wasn't found");
+    }
   } catch (err) {
-    // if task wasn't found
-    res
-      .status(400)
-      .send(`<h1>task with id ${taskID} wasn't found. deleted 0 tasks</h1>`);
-    return;
+    res.send(err);
   }
 });
 
-router.patch("/edit/:taskID", auth, async (req, res) => {
+// update task's details (title, desctiption, category)
+router.patch("/:taskID", auth, async (req, res) => {
   const taskID = req.params.taskID;
   var title = req.body.title;
   var description = req.body.description;
@@ -106,10 +108,13 @@ router.patch("/edit/:taskID", auth, async (req, res) => {
 
   try {
     let task = await Task.findOne({ _id: taskID });
-    if (!task) {
-      res
-        .status(400)
-        .send("<h1>task id wasn't found. 0 tasks were modified</h1>");
+    if (task) {
+      if (task.userID !== req.user.userID) {
+        res.status(400).send("<h1>task wasn't found</h1>");
+        return;
+      }
+    } else {
+      res.status(400).send("<h1>task wasn't found</h1>");
       return;
     }
   } catch (err) {
@@ -142,4 +147,5 @@ router.patch("/edit/:taskID", auth, async (req, res) => {
     console.log(err);
   }
 });
+
 module.exports = router;

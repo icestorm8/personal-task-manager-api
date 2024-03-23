@@ -75,11 +75,6 @@ router.get("/whoami", auth, (req, res) => {
   res.send(req.user.name);
 });
 
-// router.patch("/edit", auth, (req, res)=>{
-
-// })
-
-// router.delete("")
 router.get("/all", auth, async (req, res) => {
   if (req.user.isAdmin) {
     var users = await User.find(); // should this include the admin user?
@@ -90,9 +85,17 @@ router.get("/all", auth, async (req, res) => {
     res.json(users);
     return;
   } else {
-    res.status(500).send("access denied");
+    res.status(403).send("access denied");
   }
 });
+
+// router.delete("/delete/:userID", async (req, res)=>{
+  
+// })
+
+router.patch("/edit", auth, (req, res)=>{
+  
+})
 // create user - signup
 // get user - login
 // delete user - remove user from db
