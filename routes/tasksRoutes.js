@@ -15,6 +15,9 @@ router.get("/:taskID", auth, async (req, res) => {
       res.status(404).send(`task wasn't found`);
       return;
     } else {
+      if (task.userID !== req.user.userID) {
+        res.status(404).send("task wasn't found");
+      }
       res.status(200).json(task);
     }
   } catch (err) {
@@ -89,7 +92,7 @@ router.delete("/:taskID", auth, async (req, res) => {
           .send(`<h1>task with id ${taskID} was deleted successfuly</h1>`);
       } else {
         // user tried to delete item that doesn't belong to it
-        res.send("<h1>invalid id</h1>");
+        res.status(404).send("task wasn't found");
       }
     } else {
       res.status("task wasn't found");
