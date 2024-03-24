@@ -42,7 +42,7 @@ router.get("/", auth, async (req, res) => {
 });
 
 // create task as logged in user
-router.post("/create", auth, async (req, res) => {
+router.post("/", auth, async (req, res) => {
   //   const categoryId = await Category.findOne({ title: req.categoryName });
   // categoryId would be "undefined" if no category matched the title entered
   var newTask = {
@@ -53,8 +53,8 @@ router.post("/create", auth, async (req, res) => {
     // categoryID: categoryId, This can be undefined or null
   };
 
-  const categoryName = req.body.category_name;
-  console.log(categoryName);
+  var categoryName = req.body.category_name;
+  // not mandatory to add category
   // check if i got a category name in my req body:
   if (categoryName) {
     let category = await Category.findOne({ title: categoryName }); // search for category by the title given in my categories
@@ -104,39 +104,37 @@ router.delete("/:taskID", auth, async (req, res) => {
 
 // update task's details (title, desctiption, category)
 router.patch("/:taskID", auth, async (req, res) => {
-  const taskID = req.params.taskID;
+  var taskID = req.params.taskID;
   var title = req.body.title;
   var description = req.body.description;
   var categoryName = req.body.category_name;
 
   try {
     let task = await Task.findOne({ _id: taskID });
-    if (task) {
-      if (task.userID !== req.user.id) {
-        res.status(400).send("<h1>task wasn't found</h1>");
-        return;
-      }
-    } else {
-      res.status(400).send("<h1>task wasn't found</h1>");
+    if (!task) {
+      console.log("task not found");
+      res.status(404).send("<h1>task wasn't found</h1>");
+      return;
+    }
+    if (task && task.userID != req.user.id) {
+      console.log("access denied");
+      res.status(404).send("<h1>task wasn't found</h1>");
       return;
     }
   } catch (err) {
     res.status(400).send("<h1>bad id</h1>");
-    return;
   }
 
   try {
     var category = await Category.findOne({ title: categoryName });
+    // console.log(category);
     if (!category) {
       res
         .status(400)
         .send("<h1>category id wasn't found. 0 tasks were modified</h1>");
       return;
     }
-  } catch (err) {
-    console.log(err);
-  }
-  try {
+
     await Task.updateOne(
       { _id: taskID },
       {

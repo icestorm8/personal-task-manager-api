@@ -52,11 +52,11 @@ router.get("/:categoryName", auth, async (req, res) => {
 
 // create a new category (send title in req body)
 router.post("/", auth, async (req, res) => {
-  var categoryName = req.body.category_name;
+  var categoryName = req.body.title;
   // Create a new category if it doesn't exist
   if (!categoryName) {
-    console.log("name wasn't stated");
-    res.end();
+    res.send("category_name wasn't stated");
+
     return;
   }
   try {
@@ -105,7 +105,7 @@ router.patch("/:categoryName", auth, async (req, res) => {
       await Category.updateOne({ _id: category._id }, { title: title });
       res
         .status(200)
-        .send(`category ${categoryName} was modified to ${category.title}`);
+        .send(`category ${category.title} was modified to ${title}`);
       return;
     } else {
       res.send(`category "${categoryName}" wasn't found`);
