@@ -15,7 +15,7 @@ router.get("/:taskID", auth, async (req, res) => {
       res.status(404).send(`task wasn't found`);
       return;
     } else {
-      if (task.userID !== req.user.userID) {
+      if (task.userID !== req.user.id) {
         res.status(404).send("task wasn't found");
       }
       res.status(200).json(task);
@@ -85,7 +85,7 @@ router.delete("/:taskID", auth, async (req, res) => {
   try {
     let task = await Task.findOne({ _id: taskID });
     if (task) {
-      if (task.userID === req.user.userID) {
+      if (task.userID === req.user.id) {
         task = await Task.deleteOne({ _id: taskID });
         res
           .status(200)
@@ -112,7 +112,7 @@ router.patch("/:taskID", auth, async (req, res) => {
   try {
     let task = await Task.findOne({ _id: taskID });
     if (task) {
-      if (task.userID !== req.user.userID) {
+      if (task.userID !== req.user.id) {
         res.status(400).send("<h1>task wasn't found</h1>");
         return;
       }

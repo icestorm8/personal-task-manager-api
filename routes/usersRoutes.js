@@ -5,11 +5,7 @@ const User = require("../models/User");
 const router = express.Router();
 const auth = require("../middlewares/auth");
 
-// router.get("/", (req, res) => {
-//   res.send("<h1>welcome to users</h1>");
-// });
-
-// signup - change so admin can enter
+// signup (post)
 router.post("/", async (req, res) => {
   var alreadyExists = await User.findOne({ email: req.body.email });
   // console.log(alreadyExists);
@@ -40,6 +36,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+// login (post)
 router.post("/login", async (req, res) => {
   const givenEmail = req.body.email;
   const givenPass = req.body.password;
@@ -71,11 +68,13 @@ router.post("/login", async (req, res) => {
   res.json({ token });
 });
 
+// view current user name (as logged user) (get)
 router.get("/whoami", auth, (req, res) => {
   res.send(req.user.name);
 });
 
-router.get("/all", auth, async (req, res) => {
+// only an admin (manually changed to an admin from db) can watch all users (get)
+router.get("/", auth, async (req, res) => {
   if (req.user.isAdmin) {
     var users = await User.find(); // should this include the admin user?
     if (!users) {
@@ -83,22 +82,58 @@ router.get("/all", auth, async (req, res) => {
       return;
     }
     res.json(users);
-    return;
   } else {
     res.status(403).send("access denied");
   }
 });
 
-// router.delete("/delete/:userID", async (req, res)=>{
-  
-// })
+// only admin can view user details (by it's id) (get)
+router.get("/:userID", auth, async (req, res) => {
+  try {
+    if (req.user.isAdmin) {
+      var userID = req.params.userID;
+      var user = await User.findById(userID);
 
-router.patch("/edit", auth, (req, res)=>{
-  
-})
-// create user - signup
-// get user - login
-// delete user - remove user from db
-// update user - change details (like password but not unique details)
+      if (user) {
+        res.status(200).json(user);
+        return;
+      }
+      res.status(404).send("user with id stated wasn't found");
+      return;
+    } else {
+      res.status(403).send("access denied");
+    }
+  } catch (err) {
+    res.send("bad id");
+  }
+});
+
+// only admin can remove a user (by it's id) (delete)
+router.delete("/:userID", auth, async (req, res) => {
+  try {
+    if (req.user.isAdmin) {
+      var userID = req.params.userID;
+      var user = await User.findById(userID);
+
+      if (user) {
+        user = await User.deleteOne({ _id: userID });
+        res.status(200).send(`user with id ${userID} was removed`);
+        return;
+      }
+      res.status(404).send("user with id stated wasn't found");
+      return;
+    } else {
+      res.status(403).send("access denied");
+    }
+  } catch (err) {
+    res.send("bad id");
+  }
+});
+
+// every logged in user can change it's details (but which? ) - must finish this!!
+router.patch("/edit", auth, (req, res) => {
+  var loggedUser = req.user;
+  // which details should i allow the user to change?
+});
 
 module.exports = router;
