@@ -70,7 +70,7 @@ router.post("/login", async (req, res) => {
     isAdmin: user.isAdmin,
   };
 
-  const token = jwt.sign(dataForToken, "175");
+  const token = jwt.sign(dataForToken, process.env.JWT_SECRET);
 
   res.json({ token });
 });
@@ -184,7 +184,7 @@ router.patch("/edit", auth, async (req, res) => {
         id: user._id,
         isAdmin: user.isAdmin,
       };
-      const token = jwt.sign(dataForToken, "175"); // generate new token
+      const token = jwt.sign(dataForToken, process.env.JWT_SECRET); // generate new token
       res.json({ token: token, user: user }); // new token since we want to see the changes (who am i shows the logged in user but it's old name, since it's the old token) and the user we view is the one saved on our request (details from jwt)
       return;
     } else {

@@ -16,7 +16,7 @@ function auth(req, res, next) {
   }
 
   try {
-    const data = jwt.verify(token, "175"); //key could be saved in env file
+    const data = jwt.verify(token, process.env.JWT_SECRET); //key could be saved in env file
     req.user = data;
     // console.log(data);
     next();
