@@ -1,5 +1,5 @@
 # Personal Task Manager API
-
+> NOTICE! this doesn't use cookies currently so use is only from postman using bearer token
 ## Description
 This API is designed to help individuals manage their personal tasks. It is built with Node.js and MongoDB and allows users to perform CRUD operations on their tasks.
 
@@ -16,6 +16,15 @@ Before installing, make sure you have Node.js and MongoDB installed on your syst
 git clone https://github.com/icestorm8/personal-task-manager-api
 cd personal-task-manager-api
 npm install
+```
+Configuration
+Create a .env file in the root directory and add the following variables:
+
+```.env
+PORT=3000
+MONGO_URI=<your_mongodb_uri>
+JWT_SECRET=<your_jwt_secret>
+MONGO_DB_NAME=<your_mongodb_db_name>
 ```
 
 ## Usage
